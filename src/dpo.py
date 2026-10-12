@@ -100,6 +100,20 @@ def evaluate_dpo(policy_model, reference_model, tokenizer, val_examples, beta, m
         "reward_margin": total_margin / num_batches,
     }
 
+# Helper Function
+def _cap_prompt_length(tokenizer, examples, max_prompt_length):
+    # as written in the manual, prompts are capped at 256 tokens even though the full
+    # context window is 512, that way a long prompt can never eat so much
+    # of the budget that there's barely any room left for the response
+    capped = []
+    for row in examples:
+        prompt_ids = tokenizer.encode(row["prompt"], add_special_tokens=False)
+        if len(prompt_ids) > max_prompt_length:
+            prompt_ids = prompt_ids[:max_prompt_length]
+            row = dict(row)
+            row["prompt"] = tokenizer.decode(prompt_ids)
+        capped.append(row)
+    return capped
 
 def train_dpo(
     sft_checkpoint_path,
@@ -108,6 +122,7 @@ def train_dpo(
     train_size=15000,
     val_size=1000,
     context_length=512,
+    max_prompt_length=256,
     beta=0.1,
     learning_rate=1e-6,
     per_device_batch_size=1,
@@ -144,6 +159,11 @@ def train_dpo(
     print("loading preference data...")
     train_examples, val_examples = load_preference_data_fn(train_size=train_size, val_size=val_size, seed=seed)
     print(f"got {len(train_examples)} train pairs, {len(val_examples)} val pairs")
+
+    # enforcing the 256 token prompt cap from the manual's table now, after
+    # the tokenizer is loaded and before training actually starts
+    train_examples = _cap_prompt_length(tokenizer, train_examples, max_prompt_length)
+    val_examples = _cap_prompt_length(tokenizer, val_examples, max_prompt_length)
 
     optimizer = AdamW(policy_model.parameters(), lr=learning_rate)
     scaler = torch.cuda.amp.GradScaler()
