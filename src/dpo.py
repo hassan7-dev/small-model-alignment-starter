@@ -20,7 +20,9 @@ import time
 
 import torch
 from torch.optim import AdamW
-from transformers import AutoModelForCausalLM, AutoTokenizer, PreTrainedTokenizerFast
+from tokenizers import Tokenizer as RawTokenizer
+from transformers import PreTrainedTokenizerFast, Qwen2Config, Qwen2ForCausalLM
+from safetensors.torch import load_file as load_safetensors
 
 from src.data_utils import compute_response_logprobs, compute_dpo_loss_from_logps
 
@@ -115,6 +117,45 @@ def _cap_prompt_length(tokenizer, examples, max_prompt_length):
         capped.append(row)
     return capped
 
+# Helper Function 1
+
+def _load_local_tokenizer(checkpoint_path):
+    # every from_pretrained path kept hitting the same cached_file bug
+    # regardless of class or path shape, since this installed version of
+    # transformers always tries a hub lookup for any local directory. this
+    # loads tokenizer.json straight off disk instead, no hub resolution
+    # involved at all
+    raw = RawTokenizer.from_file(os.path.join(checkpoint_path, "tokenizer.json"))
+    tok = PreTrainedTokenizerFast(tokenizer_object=raw)
+    special_tokens_path = os.path.join(checkpoint_path, "special_tokens_map.json")
+    if os.path.exists(special_tokens_path):
+        with open(special_tokens_path) as f:
+            special = json.load(f)
+        def _value(v):
+            return v["content"] if isinstance(v, dict) else v
+        if "eos_token" in special:
+            tok.eos_token = _value(special["eos_token"])
+        if "bos_token" in special:
+            tok.bos_token = _value(special["bos_token"])
+        if "pad_token" in special:
+            tok.pad_token = _value(special["pad_token"])
+    return tok
+
+# Helper Function 2
+
+def _load_local_causal_lm(checkpoint_path, torch_dtype):
+    # same reasoning as above, builds the model straight from config.json
+    # and model.safetensors on disk, skipping AutoConfig/AutoModel entirely
+    with open(os.path.join(checkpoint_path, "config.json")) as f:
+        config_dict = json.load(f)
+    config = Qwen2Config(**config_dict)
+    model = Qwen2ForCausalLM(config)
+    state_dict = load_safetensors(os.path.join(checkpoint_path, "model.safetensors"))
+    model.load_state_dict(state_dict)
+    model.to(dtype=torch_dtype)
+    return model
+
+
 def train_dpo(
     sft_checkpoint_path,
     output_dir,
@@ -139,18 +180,18 @@ def train_dpo(
     torch.manual_seed(seed)
 
     print(f"loading policy from {sft_checkpoint_path} onto {policy_device}")
-    tokenizer = PreTrainedTokenizerFast.from_pretrained(sft_checkpoint_path, local_files_only=True)
+    tokenizer = _load_local_tokenizer(sft_checkpoint_path)
     if tokenizer.pad_token_id is None:
         tokenizer.pad_token = tokenizer.eos_token
 
     # policy stays fp32 since I'm doing grad scaling on it, reference can be
     # fp16 since it never gets a gradient anyway, just saves memory
-    policy_model = Qwen2ForCausalLM.from_pretrained(sft_checkpoint_path, torch_dtype=torch.float32, local_files_only=True)
+    policy_model = _load_local_causal_lm(sft_checkpoint_path, torch.float32)
     policy_model.to(policy_device)
     policy_model.train()
 
     print(f"loading frozen reference copy onto {reference_device}")
-    reference_model = Qwen2ForCausalLM.from_pretrained(sft_checkpoint_path, torch_dtype=torch.float16, local_files_only=True)
+    reference_model = _load_local_causal_lm(sft_checkpoint_path, torch.float16)
     reference_model.to(reference_device)
     reference_model.eval()
     for param in reference_model.parameters():
