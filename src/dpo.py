@@ -139,18 +139,18 @@ def train_dpo(
     torch.manual_seed(seed)
 
     print(f"loading policy from {sft_checkpoint_path} onto {policy_device}")
-    tokenizer = AutoTokenizer.from_pretrained(sft_checkpoint_path)
+    tokenizer = AutoTokenizer.from_pretrained(sft_checkpoint_path, local_files_only=True)
     if tokenizer.pad_token_id is None:
         tokenizer.pad_token = tokenizer.eos_token
 
     # policy stays fp32 since I'm doing grad scaling on it, reference can be
     # fp16 since it never gets a gradient anyway, just saves memory
-    policy_model = AutoModelForCausalLM.from_pretrained(sft_checkpoint_path, torch_dtype=torch.float32)
+    policy_model = AutoModelForCausalLM.from_pretrained(sft_checkpoint_path, torch_dtype=torch.float32, local_files_only=True)
     policy_model.to(policy_device)
     policy_model.train()
 
     print(f"loading frozen reference copy onto {reference_device}")
-    reference_model = AutoModelForCausalLM.from_pretrained(sft_checkpoint_path, torch_dtype=torch.float16)
+    reference_model = AutoModelForCausalLM.from_pretrained(sft_checkpoint_path, torch_dtype=torch.float16, local_files_only=True)
     reference_model.to(reference_device)
     reference_model.eval()
     for param in reference_model.parameters():
