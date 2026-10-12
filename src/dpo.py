@@ -20,26 +20,10 @@ import time
 
 import torch
 from torch.optim import AdamW
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, PreTrainedTokenizerFast
 
 from src.data_utils import compute_response_logprobs, compute_dpo_loss_from_logps
 
-# Helper Function
-def _shorten_checkpoint_path(path):
-    # huggingface_hub's repo id check rejects any string with more than one
-    # slash in it, which breaks on kaggle's deeply nested input paths even
-    # with local_files_only=True, since get_tokenizer_config runs that check
-    # before it ever looks at whether the path is a real local directory.
-    # symlinking to a short path near the root sidesteps this completely,
-    # no matter what version of the library ends up installed
-    short_path = "/dpo_sft_ckpt"
-    if os.path.islink(short_path):
-        os.unlink(short_path)
-    elif os.path.exists(short_path):
-        import shutil
-        shutil.rmtree(short_path)
-    os.symlink(path, short_path)
-    return short_path
 
 def _reward_stats(policy_chosen_logps, policy_rejected_logps, reference_chosen_logps, reference_rejected_logps, beta):
     # these are the implicit rewards from the manual, section 10.5. not
@@ -155,19 +139,18 @@ def train_dpo(
     torch.manual_seed(seed)
 
     print(f"loading policy from {sft_checkpoint_path} onto {policy_device}")
-    sft_checkpoint_path = _shorten_checkpoint_path(sft_checkpoint_path)
-    tokenizer = AutoTokenizer.from_pretrained(sft_checkpoint_path, local_files_only=True)
+    tokenizer = PreTrainedTokenizerFast.from_pretrained(sft_checkpoint_path, local_files_only=True)
     if tokenizer.pad_token_id is None:
         tokenizer.pad_token = tokenizer.eos_token
 
     # policy stays fp32 since I'm doing grad scaling on it, reference can be
     # fp16 since it never gets a gradient anyway, just saves memory
-    policy_model = AutoModelForCausalLM.from_pretrained(sft_checkpoint_path, torch_dtype=torch.float32, local_files_only=True)
+    policy_model = Qwen2ForCausalLM.from_pretrained(sft_checkpoint_path, torch_dtype=torch.float32, local_files_only=True)
     policy_model.to(policy_device)
     policy_model.train()
 
     print(f"loading frozen reference copy onto {reference_device}")
-    reference_model = AutoModelForCausalLM.from_pretrained(sft_checkpoint_path, torch_dtype=torch.float16, local_files_only=True)
+    reference_model = Qwen2ForCausalLM.from_pretrained(sft_checkpoint_path, torch_dtype=torch.float16, local_files_only=True)
     reference_model.to(reference_device)
     reference_model.eval()
     for param in reference_model.parameters():
