@@ -83,9 +83,13 @@ def compute_response_logprobs(model, tokenizer, prompts, responses, max_length):
     against the logits.
     """
     batch = build_sft_batch(tokenizer, prompts, responses, max_length)
-    input_ids = batch["input_ids"]
-    attention_mask = batch["attention_mask"]
-    labels = batch["labels"]
+    # build_sft_batch makes plain cpu tensors, so I need to move them onto
+    # whatever device the model actually lives on before the forward pass,
+    # otherwise this blows up the moment the model isn't on cpu
+    device = next(model.parameters()).device
+    input_ids = batch["input_ids"].to(device)
+    attention_mask = batch["attention_mask"].to(device)
+    labels = batch["labels"].to(device)
 
     outputs = model(input_ids=input_ids, attention_mask=attention_mask)
     logits = outputs.logits  # (batch, seq_len, vocab)

@@ -16,14 +16,17 @@ from datasets import load_dataset
 from src.prompting import format_prompt
 
 
-def _is_single_turn(messages) -> bool:
-    # a lot of these datasets include multi-turn conversations, and the
-    # manual is explicit about filtering those out unless I implement a
-    # multi-turn format, which I'm not doing here. single turn means
-    # exactly one user message followed by one assistant message.
-    if len(messages) != 2:
-        return False
-    return messages[0]["role"] == "user" and messages[1]["role"] == "assistant"
+def _first_exchange(messages):
+    # ultrachat is mostly multi-turn conversations, if I require the WHOLE
+    # conversation to be exactly one user turn and one assistant turn I end
+    # up throwing out almost everything before getting anywhere close to
+    # the dataset size I actually need. pulling out just the first user to
+    # assistant exchange instead, which still gives me a clean single-turn
+    # training pair without needing the rest of the conversation to match
+    for i in range(len(messages) - 1):
+        if messages[i]["role"] == "user" and messages[i + 1]["role"] == "assistant":
+            return messages[i]["content"], messages[i + 1]["content"]
+    return None
 
 
 def load_sft_data(train_size=30000, val_size=1000, seed=42):
@@ -36,12 +39,14 @@ def load_sft_data(train_size=30000, val_size=1000, seed=42):
     examples = []
     for row in raw:
         messages = row["messages"]
-        if not _is_single_turn(messages):
+        exchange = _first_exchange(messages)
+        if exchange is None:
             continue
-        instruction = messages[0]["content"].strip()
-        response = messages[1]["content"].strip()
+        instruction, response = exchange
+        instruction = instruction.strip()
+        response = response.strip()
         if not instruction or not response:
-            # skip anything empty, no point training on a blank pair
+            # skipping anything empty, cz no point training on a blank pair
             continue
         examples.append({"prompt": format_prompt(instruction), "response": response})
         if len(examples) >= train_size + val_size:
@@ -64,7 +69,7 @@ def _parse_hh_transcript(text):
     turns = [t for t in turns if t != ""]
 
     if len(turns) != 4:
-        # more than one back-and-forth, not single turn, skip it
+        # more than one back-and-forth, not single turn, so we skip it
         return None
 
     role_a, content_a, role_b, content_b = turns
