@@ -151,7 +151,16 @@ def _load_local_causal_lm(checkpoint_path, torch_dtype):
     config = Qwen2Config(**config_dict)
     model = Qwen2ForCausalLM(config)
     state_dict = load_safetensors(os.path.join(checkpoint_path, "model.safetensors"))
-    model.load_state_dict(state_dict)
+    # qwen2.5-0.5b ties lm_head.weight to the embedding weights, so
+    # safetensors only stores it once and this key will always come back
+    # missing here. that's expected, not corruption, tie_weights() below
+    # rebuilds the link after the embedding weight is loaded
+    missing, unexpected = model.load_state_dict(state_dict, strict=False)
+    if missing != ["lm_head.weight"]:
+        raise RuntimeError(f"unexpected missing keys loading checkpoint: {missing}")
+    if unexpected:
+        raise RuntimeError(f"unexpected extra keys loading checkpoint: {unexpected}")
+    model.tie_weights()
     model.to(dtype=torch_dtype)
     return model
 
