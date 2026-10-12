@@ -63,7 +63,7 @@ def _dpo_step(policy_model, reference_model, tokenizer, prompts, chosen, rejecte
     return loss, accuracy, margin
 
 
-def evaluate_dpo(policy_model, reference_model, tokenizer, val_examples, beta, max_length, policy_device, reference_device, batch_size=4):
+def evaluate_dpo(policy_model, reference_model, tokenizer, val_examples, beta, max_length, policy_device, reference_device, batch_size=2):
     policy_model.eval()
     total_loss = 0.0
     total_accuracy = 0.0
@@ -77,14 +77,20 @@ def evaluate_dpo(policy_model, reference_model, tokenizer, val_examples, beta, m
             chosen = [row["chosen"] for row in chunk]
             rejected = [row["rejected"] for row in chunk]
 
-            loss, accuracy, margin = _dpo_step(
-                policy_model, reference_model, tokenizer, prompts, chosen, rejected,
-                beta, max_length, policy_device, reference_device,
-            )
+            # same fix as in the sft eval, this one's actually more memory
+            # hungry since it's doing four forward passes per batch
+            # (policy and reference, chosen and rejected)
+            with torch.autocast(device_type="cuda", dtype=torch.float16):
+                loss, accuracy, margin = _dpo_step(
+                    policy_model, reference_model, tokenizer, prompts, chosen, rejected,
+                    beta, max_length, policy_device, reference_device,
+                )
             total_loss += loss.item()
             total_accuracy += accuracy
             total_margin += margin
             num_batches += 1
+            del loss
+            torch.cuda.empty_cache()
 
     policy_model.train()
     num_batches = max(1, num_batches)

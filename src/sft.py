@@ -58,7 +58,7 @@ def _cosine_schedule_with_warmup(optimizer, num_warmup_steps, num_training_steps
     return LambdaLR(optimizer, lr_lambda)
 
 
-def evaluate(model, tokenizer, val_examples, max_length, device, batch_size=8):
+def evaluate(model, tokenizer, val_examples, max_length, device, batch_size=4):
     model.eval()
     total_loss = 0.0
     num_batches = 0
@@ -67,9 +67,18 @@ def evaluate(model, tokenizer, val_examples, max_length, device, batch_size=8):
             chunk = val_examples[i:i + batch_size]
             prompts = [row["prompt"] for row in chunk]
             responses = [row["response"] for row in chunk]
-            loss = compute_sft_loss(model, tokenizer, prompts, responses, max_length)
+            # matching the same autocast precision training uses, otherwise
+            # eval runs the full fp32 logits tensor through log_softmax and
+            # that's a big memory spike with qwen's vocab size, enough to
+            # OOM a T4 on its own
+            with torch.autocast(device_type="cuda", dtype=torch.float16):
+                loss = compute_sft_loss(model, tokenizer, prompts, responses, max_length)
             total_loss += loss.item()
             num_batches += 1
+            # clearing this out after every eval batch so memory doesn't
+            # slowly build up across a run with a lot of eval checkpoints
+            del loss
+            torch.cuda.empty_cache()
     model.train()
     return total_loss / max(1, num_batches)
 
