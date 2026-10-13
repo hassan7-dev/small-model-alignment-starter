@@ -103,11 +103,25 @@ def _load_persona_lora_checkpoint(adapter_path, device):
     return model, tokenizer
 
 
+def _load_persona_base_checkpoint(device):
+    # this is used as the "before" comparison point for the lora run
+    # since this track doesn't have its own sft stage the way qwen does
+    tokenizer = AutoTokenizer.from_pretrained(PERSONA_BASE_MODEL_ID)
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+    model = AutoModelForCausalLM.from_pretrained(PERSONA_BASE_MODEL_ID, torch_dtype=torch.float16)
+    model.to(device)
+    model.eval()
+    return model, tokenizer
+
+
 def load_checkpoint(checkpoint_path, checkpoint_kind, device="cuda"):
     if checkpoint_kind == "qwen":
         return _load_qwen_checkpoint(checkpoint_path, device)
     elif checkpoint_kind == "persona_lora":
         return _load_persona_lora_checkpoint(checkpoint_path, device)
+    elif checkpoint_kind == "persona_base":
+        return _load_persona_base_checkpoint(device)
     else:
         raise ValueError(f"unknown checkpoint_kind: {checkpoint_kind}")
 
@@ -264,8 +278,8 @@ if __name__ == "__main__":
     alpaca_parser.add_argument("--output_path", type=str, default="eval_sets/alpaca_eval_300_seed42.json")
 
     gen_parser = subparsers.add_parser("generate")
-    gen_parser.add_argument("--checkpoint_path", type=str, required=True)
-    gen_parser.add_argument("--checkpoint_kind", type=str, choices=["qwen", "persona_lora"], required=True)
+    gen_parser.add_argument("--checkpoint_path", type=str, required=None)
+    gen_parser.add_argument("--checkpoint_kind", type=str, choices=["qwen", "persona_lora", "persona_base"], required=True)
     gen_parser.add_argument("--eval_set_path", type=str, required=True)
     gen_parser.add_argument("--generator_name", type=str, required=True)
     gen_parser.add_argument("--dataset_name", type=str, required=True)
