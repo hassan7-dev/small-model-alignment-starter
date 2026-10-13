@@ -83,7 +83,7 @@ def train_lora_persona_dpo(
         tokenizer.pad_token = tokenizer.eos_token
 
     print(f"loading base model {MODEL_ID}")
-    model = AutoModelForCausalLM.from_pretrained(MODEL_ID, torch_dtype=torch.bfloat16)
+    model = AutoModelForCausalLM.from_pretrained(MODEL_ID, torch_dtype=torch.float32)
 
     train_rows, val_rows = load_persona_pairs(data_path, seed=seed)
     train_dataset = _to_conversational_dataset(train_rows)
@@ -120,7 +120,7 @@ def train_lora_persona_dpo(
         eval_strategy="steps",
         eval_steps=10,
         save_strategy="no",
-        bf16=torch.cuda.is_available(),
+        fp16=torch.cuda.is_available(),
         report_to=[],
         seed=seed,
     )
