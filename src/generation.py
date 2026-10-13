@@ -135,7 +135,13 @@ def generate_responses(
 
     for row in rows_to_run:
         prompt_text = format_prompt(row["instruction"])
-        inputs = tokenizer(prompt_text, return_tensors="pt").to(device)
+        inputs = tokenizer(prompt_text, return_tensors="pt")
+        # qwen2 is decoder only and generate() chokes on token_type_ids
+        # being passed in, even though the tokenizer includes it by
+        # default. this wasn't an issue during training since nothing there
+        # ever called generate()
+        inputs.pop("token_type_ids", None)
+        inputs = {k: v.to(device) for k, v in inputs.items()}
 
         generated_ids = model.generate(
             **inputs,
