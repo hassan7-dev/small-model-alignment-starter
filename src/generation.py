@@ -18,7 +18,7 @@ import random
 
 import torch
 from huggingface_hub import hf_hub_download
-from peft import LoraConfig, get_peft_model
+from peft import PeftModel
 from safetensors.torch import load_file as load_safetensors
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -73,30 +73,17 @@ def _load_qwen_checkpoint(checkpoint_path, device):
 
 
 def _load_persona_lora_checkpoint(adapter_path, device):
-    # base model comes straight from the hub by name, so that part's a
-    # normal from_pretrained call with no local path involved. only the
-    # adapter weights are local, so those get loaded by hand instead of
-    # going through PeftModel.from_pretrained, same reasoning as the qwen
-    # checkpoints above
+    # letting peft's own loader handle the adapter instead of hand
+    # matching state dict keys myself, since the exact key naming
+    # peft expects has changed across versions and it wasnt working out. 
+    # PeftModel.from_pretrained reads adapter_config.json
+    # itself and knows how to line the weights up correctly
     tokenizer = AutoTokenizer.from_pretrained(PERSONA_BASE_MODEL_ID)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
     base_model = AutoModelForCausalLM.from_pretrained(PERSONA_BASE_MODEL_ID, torch_dtype=torch.float16)
-
-    with open(os.path.join(adapter_path, "adapter_config.json")) as f:
-        adapter_config_dict = json.load(f)
-    # adapter_config.json has a few bookkeeping fields LoraConfig doesn't
-    # accept as constructor args, so only pass through what it knows about
-    lora_field_names = {field for field in LoraConfig.__dataclass_fields__}
-    lora_kwargs = {k: v for k, v in adapter_config_dict.items() if k in lora_field_names}
-    lora_config = LoraConfig(**lora_kwargs)
-
-    model = get_peft_model(base_model, lora_config)
-    state_dict = load_safetensors(os.path.join(adapter_path, "adapter_model.safetensors"))
-    missing, unexpected = model.load_state_dict(state_dict, strict=False)
-    if unexpected:
-        raise RuntimeError(f"unexpected extra keys loading lora adapter: {unexpected}")
+    model = PeftModel.from_pretrained(base_model, adapter_path)
 
     model.to(device)
     model.eval()
