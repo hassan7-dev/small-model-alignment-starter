@@ -17,7 +17,7 @@ import os
 import random
 
 import torch
-from datasets import load_dataset
+from huggingface_hub import hf_hub_download
 from peft import LoraConfig, get_peft_model
 from safetensors.torch import load_file as load_safetensors
 from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -29,19 +29,23 @@ PERSONA_BASE_MODEL_ID = "HuggingFaceTB/SmolLM2-360M-Instruct"
 
 
 def build_alpaca_eval_subset(n=300, seed=42, output_path="eval_sets/alpaca_eval_300_seed42.json"):
-    # pulling straight from the hub here, not a local directory, so none
-    # of the path bug applies, this one's a normal from_pretrained style
-    # download and just works
-    dataset = load_dataset("tatsu-lab/alpaca_eval", "alpaca_eval")["eval"]
+    # datasets dropped support for script based dataset repos entirely,
+    # and alpaca_eval ships as a loading script instead of plain json or
+    # parquet, so load_dataset can't touch it anymore no matter what. so im just
+    # pulling the raw json file straight off the hub instead, same data,
+    # just skips the script path completely
+    json_path = hf_hub_download(repo_id="tatsu-lab/alpaca_eval", filename="alpaca_eval.json", repo_type="dataset")
+    with open(json_path) as f:
+        all_rows = json.load(f)
 
     rng = random.Random(seed)
-    indices = list(range(len(dataset)))
+    indices = list(range(len(all_rows)))
     rng.shuffle(indices)
     chosen_indices = sorted(indices[:n])
 
     rows = []
     for i in chosen_indices:
-        row = dataset[i]
+        row = all_rows[i]
         rows.append({
             "id": f"alpaca-eval-42-{i:04d}",
             "instruction": row["instruction"],
