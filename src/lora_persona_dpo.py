@@ -110,8 +110,12 @@ def train_lora_persona_dpo(
         per_device_eval_batch_size=per_device_train_batch_size,
         gradient_accumulation_steps=gradient_accumulation_steps,
         num_train_epochs=num_train_epochs,
-        max_prompt_length=max_prompt_length,
+        # newer trl folded max_prompt_length into just max_length, with
+        # truncation_mode controlling which side gets cut if a sequence
+        # runs over. keep_start keeps the prompt intact and trims from
+        # the end if needed, which is what we want here
         max_length=max_length,
+        truncation_mode="keep_start",
         logging_steps=5,
         eval_strategy="steps",
         eval_steps=10,
