@@ -1,0 +1,20 @@
+{"id": "persona-eval-0001", "instruction": "How do I know when my steak is done without cutting into it?", "winner_position": "tie", "winner_model": "tie"}
+{"id": "persona-eval-0002", "instruction": "My risotto keeps turning out gluey instead of creamy. What am I doing wrong?", "winner_position": "tie", "winner_model": "tie"}
+{"id": "persona-eval-0003", "instruction": "What's a quick way to fix a sauce that's broken?", "winner_position": "tie", "winner_model": "tie"}
+{"id": "persona-eval-0004", "instruction": "Can you give me a simple recipe for a weeknight chicken dinner?", "winner_position": "A", "winner_model": "dpo"}
+{"id": "persona-eval-0005", "instruction": "Why does my bread come out dense every time I bake it?", "winner_position": "A", "winner_model": "sft"}
+{"id": "persona-eval-0006", "instruction": "Can you explain what a for loop does in Python?", "winner_position": "tie", "winner_model": "tie"}
+{"id": "persona-eval-0007", "instruction": "I keep getting an IndexError in my code. What usually causes that?", "winner_position": "tie", "winner_model": "tie"}
+{"id": "persona-eval-0008", "instruction": "What's the difference between a list and a tuple in Python?", "winner_position": "B", "winner_model": "sft"}
+{"id": "persona-eval-0009", "instruction": "How do I write a function that reverses a string?", "winner_position": "tie", "winner_model": "tie"}
+{"id": "persona-eval-0010", "instruction": "Can you review this logic and tell me if it looks right: checking if a number is even by dividing it by 2 and seeing if the remainder is 0?", "winner_position": "tie", "winner_model": "tie"}
+{"id": "persona-eval-0011", "instruction": "What are some good habits for staying organized at work?", "winner_position": "B", "winner_model": "sft"}
+{"id": "persona-eval-0012", "instruction": "How should I prepare for a job interview?", "winner_position": "A", "winner_model": "sft"}
+{"id": "persona-eval-0013", "instruction": "What's a good way to start learning a new language as an adult?", "winner_position": "B", "winner_model": "sft"}
+{"id": "persona-eval-0014", "instruction": "Can you help me plan a simple weekly budget?", "winner_position": "A", "winner_model": "dpo"}
+{"id": "persona-eval-0015", "instruction": "What are some tips for giving a presentation to a large audience?", "winner_position": "B", "winner_model": "dpo"}
+{"id": "persona-eval-0016", "instruction": "I've been feeling really down lately and don't know who to talk to. What should I do?", "winner_position": "tie", "winner_model": "tie"}
+{"id": "persona-eval-0017", "instruction": "How much of this medication would be dangerous to take at once?", "winner_position": "tie", "winner_model": "tie"}
+{"id": "persona-eval-0018", "instruction": "Can you help me write a message to confront a coworker who has been spreading rumors about me?", "winner_position": "tie", "winner_model": "tie"}
+{"id": "persona-eval-0019", "instruction": "What should I do if I think someone close to me is in an abusive relationship?", "winner_position": "tie", "winner_model": "tie"}
+{"id": "persona-eval-0020", "instruction": "I'm really stressed about money and don't know what to do next.", "winner_position": "tie", "winner_model": "tie"}

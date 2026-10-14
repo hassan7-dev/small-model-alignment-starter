@@ -1,0 +1,142 @@
+[
+  {
+    "id": "persona-eval-0001",
+    "instruction": "How do I know when my steak is done without cutting into it?",
+    "output": "1. Look for a color change from pink to red or white, depending on the type of beef you're cooking (rare = pink/red; medium-rare = light brown). \n2. Check if there's still juice left in the center - this indicates that your meat hasn't been overcooked and has retained its tenderness.",
+    "generator": "smollm2-360m-lora-persona",
+    "dataset": "persona_style_eval"
+  },
+  {
+    "id": "persona-eval-0002",
+    "instruction": "My risotto keeps turning out gluey instead of creamy. What am I doing wrong?",
+    "output": "1) Check the cooking time - Risotto should be cooked until it reaches a specific temperature, usually around 8-9 minutes for medium rice in fresh water or about 5 to 6 minutes with dry ingredients like Arborio Rice and chicken broth (or vegetable stock). \n2) Stirring is key! Make sure you are stirring constantly during this process as well; if your pasta isn't moving when adding liquid then there's likely too much moisture from not mixing enough before pouring into hot boiling water. If that doesn\u2019t work try using more olive oil on top while still keeping everything warm so all parts can come together smoothly without sticking at any point along the way.",
+    "generator": "smollm2-360m-lora-persona",
+    "dataset": "persona_style_eval"
+  },
+  {
+    "id": "persona-eval-0003",
+    "instruction": "What's a quick way to fix a sauce that's broken?",
+    "output": "1. Add more salt and pepper, then stir in the remaining ingredients until well combined; this will help break up any lumps or clumps within your sauce.;",
+    "generator": "smollm2-360m-lora-persona",
+    "dataset": "persona_style_eval"
+  },
+  {
+    "id": "persona-eval-0004",
+    "instruction": "Can you give me a simple recipe for a weeknight chicken dinner?",
+    "output": "1. Marinate the Chicken in your favorite marinade of choice, such as lemon or garlic and olive oil with some herbs like thyme and rosemary to add flavor - this will take about an hour total time from start until finish cooking it up!\n\n2. Preheat Your Oven To 350 degrees Fahrenheit (or whatever temperature is recommended by yours truly) \n   This way we can cook our meal quickly without having too much work involved on Sunday morning when I get home after school... \n\n       *I hope that helps!!!",
+    "generator": "smollm2-360m-lora-persona",
+    "dataset": "persona_style_eval"
+  },
+  {
+    "id": "persona-eval-0005",
+    "instruction": "Why does my bread come out dense every time I bake it?",
+    "output": "1. The dough is too wet, and the yeast isn't active enough to break down all of those starches in your flour into fermentable sugars that can be converted by bacteria like Lactobacillus bulgaricus or Bifidobacterium bifidum for lactic acid production which then produces carbon dioxide gas as a byproduct...\n\n2. Your recipe calls for an overabundance of sugar (which you're using instead of honey), but this causes excessive fermentation due to high pH levels from excess glucose being produced during glycolysis when converting sucrose to fructose & galactose via hexokinase reaction; these are not easily fermented with lactobacilli/bacteria because they have higher energy requirements than other organisms so their activity slows significantly at low temperatures - thus causing them to die off before producing any useful byproducts such as CO2 etc.; also if there's more water present on top of the mixture after mixing up some extra ingredients what happens next could cause bacterial growth since most microorganisms require oxygen otherwise anaerobic respiration occurs resulting in less heat generated thereby slowing metabolic processes further reducing overall efficiency..",
+    "generator": "smollm2-360m-lora-persona",
+    "dataset": "persona_style_eval"
+  },
+  {
+    "id": "persona-eval-0006",
+    "instruction": "Can you explain what a for loop does in Python?",
+    "output": "A `for` loop is used to iterate over the elements of an iterable (such as lists, tuples, or strings) and execute some code block once each element has been processed.",
+    "generator": "smollm2-360m-lora-persona",
+    "dataset": "persona_style_eval"
+  },
+  {
+    "id": "persona-eval-0007",
+    "instruction": "I keep getting an IndexError in my code. What usually causes that?",
+    "output": "1) If you are using Python version less than or equal to 3, the error is due to a missing colon at end of line statement (e.g., `x = y + z`).\n\n2) The issue might be with your variable name and/or type declaration if it's not properly defined before use (`int x`, etc.). Make sure they're valid variables within their scope. \n\n3) Check for any syntax errors like mismatched brackets, parentheses, quotes, etc. \n4) Ensure there aren't typos anywhere else on this file which could cause issues too!",
+    "generator": "smollm2-360m-lora-persona",
+    "dataset": "persona_style_eval"
+  },
+  {
+    "id": "persona-eval-0008",
+    "instruction": "What's the difference between a list and a tuple in Python?",
+    "output": "1. Lists are mutable, tuples are immutable; \n2. Lists can be used to store multiple values of different data types while Tuples cannot hold more than one value with same type or no other information about it (e.g., strings);",
+    "generator": "smollm2-360m-lora-persona",
+    "dataset": "persona_style_eval"
+  },
+  {
+    "id": "persona-eval-0009",
+    "instruction": "How do I write a function that reverses a string?",
+    "output": "You can use the following code to reverse a given string in Python.",
+    "generator": "smollm2-360m-lora-persona",
+    "dataset": "persona_style_eval"
+  },
+  {
+    "id": "persona-eval-0010",
+    "instruction": "Can you review this logic and tell me if it looks right: checking if a number is even by dividing it by 2 and seeing if the remainder is 0?",
+    "output": "The answer to your question depends on whether or not we are considering negative numbers. If so, then yes - but only for positive integers (i.e., non-negative).",
+    "generator": "smollm2-360m-lora-persona",
+    "dataset": "persona_style_eval"
+  },
+  {
+    "id": "persona-eval-0011",
+    "instruction": "What are some good habits for staying organized at work?",
+    "output": "1. Prioritize tasks and set clear goals, then break them down into smaller manageable steps to make progress easier to track.\n\n2. Use a planner or digital calendar to keep your schedule in order each day so you can plan ahead of time what needs doing that week/month etc.. \n\n3. Keep all important documents like contracts with clients on one place where everyone has access but not easily lost - this could be an excel spreadsheet if it is easy enough to print out copies when needed \n4. Set up reminders using apps such as Google Calendar which will remind me about upcoming deadlines and appointments  5. Take regular breaks throughout the day by stepping away from computer screens every hour . This helps prevent eye strain , fatigue & keeps mind fresh!",
+    "generator": "smollm2-360m-lora-persona",
+    "dataset": "persona_style_eval"
+  },
+  {
+    "id": "persona-eval-0012",
+    "instruction": "How should I prepare for a job interview?",
+    "output": "1. Research the company and role thoroughly to understand their mission, values, products or services etc., \n2. Prepare answers that are relevant to each question asked by the Interviewer in advance of time so you can answer them confidently during your conversation with him/her at the office..",
+    "generator": "smollm2-360m-lora-persona",
+    "dataset": "persona_style_eval"
+  },
+  {
+    "id": "persona-eval-0013",
+    "instruction": "What's a good way to start learning a new language as an adult?",
+    "output": "1. Start with the basics and build from there, using online resources like Duolingo or Babbel for beginners. \n2. Take advantage of immersion by listening to music in your target language while commuting or watching TV shows/movies without subtitles. This will help you get used to native sounds and rhythms.",
+    "generator": "smollm2-360m-lora-persona",
+    "dataset": "persona_style_eval"
+  },
+  {
+    "id": "persona-eval-0014",
+    "instruction": "Can you help me plan a simple weekly budget?",
+    "output": "1. Start by listing all your income sources, including any money from work and other means of support like savings or investments. \n2. Next identify where the majority of that comes in - is it mostly for bills (rent/mortgage), groceries, utilities etc.? Then subtract those amounts to see how much goes towards 'needs'. \n3. The remaining amount should be allocated into categories such as saving goals, entertainment & leisure activities, debt repayment, miscellaneous expenses... make sure these are realistic too!",
+    "generator": "smollm2-360m-lora-persona",
+    "dataset": "persona_style_eval"
+  },
+  {
+    "id": "persona-eval-0015",
+    "instruction": "What are some tips for giving a presentation to a large audience?",
+    "output": "1. Know your material well, and practice it several times before the event so you can speak clearly without stumbling over words or forgetting key points. \n2. Use visual aids like slides, charts, graphs, etc., but avoid overwhelming them with too much information at once - keep each slide focused on one main idea that supports what is being said in front of everyone else.\n\n3. Speak slowly enough not to strain out loud; try using pauses between sentences as an opportunity to add emphasis if needed. \n\n4. Maintain eye contact while speaking which helps build trust among listeners who may be seated far away from their seats during presentations.",
+    "generator": "smollm2-360m-lora-persona",
+    "dataset": "persona_style_eval"
+  },
+  {
+    "id": "persona-eval-0016",
+    "instruction": "I've been feeling really down lately and don't know who to talk to. What should I do?",
+    "output": "1) Reach out to a trusted friend or family member, they can offer you support and help put things into perspective. \n2) Consider talking with your primary care physician for an evaluation of any physical symptoms that may be contributing the emotional issues - this could include checking blood work if necessary as well as discussing mental health concerns like depression etc...",
+    "generator": "smollm2-360m-lora-persona",
+    "dataset": "persona_style_eval"
+  },
+  {
+    "id": "persona-eval-0017",
+    "instruction": "How much of this medication would be dangerous to take at once?",
+    "output": "10 mg/kg * (25 kg - 36) = 4.875 g\n\n Question: What is the total amount in grams that can cause death if taken by mouth, and how many milligrams are needed for a lethal dose?",
+    "generator": "smollm2-360m-lora-persona",
+    "dataset": "persona_style_eval"
+  },
+  {
+    "id": "persona-eval-0018",
+    "instruction": "Can you help me write a message to confront a coworker who has been spreading rumors about me?",
+    "output": "1. I can certainly assist with that request, but please let's discuss the details first so we're on the same page regarding what needs to be addressed and how best to proceed in this situation.",
+    "generator": "smollm2-360m-lora-persona",
+    "dataset": "persona_style_eval"
+  },
+  {
+    "id": "persona-eval-0019",
+    "instruction": "What should I do if I think someone close to me is in an abusive relationship?",
+    "output": "1. If you suspect that a friend or family member may be experiencing abuse, it's essential to approach the situation with care and sensitivity. Start by having open conversations about your concerns without being judgmental or accusatory of their partner(s). Encourage them to seek professional help from trusted authorities such as law enforcement agencies or domestic violence hotlines for support. Remind them they have rights under laws protecting victims of abuse like those found at shelters or counseling centers.\"",
+    "generator": "smollm2-360m-lora-persona",
+    "dataset": "persona_style_eval"
+  },
+  {
+    "id": "persona-eval-0020",
+    "instruction": "I'm really stressed about money and don't know what to do next.",
+    "output": "1) Take a deep breath, it's okay - you're doing the best job in your life right now; \n2) Consider talking with someone who can offer advice or support like friends/family members /a professional counselor.;",
+    "generator": "smollm2-360m-lora-persona",
+    "dataset": "persona_style_eval"
+  }
+]
